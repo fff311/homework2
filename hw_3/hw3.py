@@ -17,12 +17,12 @@ def book(file_book: str):
     return books
 
 
-def user(file_user: str, fields: list):
+def user(file_user: str, argument: list):
     with open(file_user, 'r') as file_json:
         users = json.load(file_json)
     filtered_users = []
     for u in users:
-        filtered_user = {key: u[key] for key in u if key in fields}
+        filtered_user = {key: u[key] for key in u if key in argument}
         filtered_users.append(filtered_user)
     return filtered_users
 
