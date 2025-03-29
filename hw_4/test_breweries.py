@@ -1,24 +1,9 @@
 import pytest
 import requests
-from pydantic import BaseModel, ValidationError, RootModel
-from typing import Optional, List
+from .pydantik import BreweryModel, BreweryListModel
+from pydantic import ValidationError
 
 BASE_URL = 'https://api.openbrewerydb.org/v1'
-
-
-class BreweryModel(BaseModel):
-    id: str
-    name: str
-    brewery_type: str
-    city: str
-    state: str
-    country: Optional[str] = None
-    postal_code: Optional[str] = None
-    website_url: Optional[str] = None
-
-
-class BreweryListModel(RootModel):
-    root: List[BreweryModel]
 
 
 @pytest.mark.parametrize('brewery_id', [
@@ -50,7 +35,8 @@ def test_breweries_by_city(city):
     breweries = response.json()
 
     assert response.status_code == 200
-    assert all(brewery['city'] == city for brewery in breweries)
+    for brewery in breweries:
+        assert brewery['city'] == city
 
     try:
         BreweryListModel.model_validate(breweries)
@@ -96,7 +82,8 @@ def test_breweries_by_type(brewery_type):
 
     assert response.status_code == 200
     assert len(breweries) > 0
-    assert all(brewery['brewery_type'] == brewery_type for brewery in breweries)
+    for brewery in breweries:
+        assert brewery['brewery_type'] == brewery_type
 
     try:
         BreweryListModel.model_validate(breweries)
