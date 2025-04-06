@@ -1,4 +1,4 @@
-hw_5/.idea/
-venv/
-test/.pytest_cache/
-test/__pycache__/
+**/.idea/
+**/venv/
+**/.pytest_cache/
+**/__pycache__/
