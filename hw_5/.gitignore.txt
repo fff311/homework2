@@ -1,4 +1,0 @@
-/hw_5/.idea/
-/hw_5/venv/
-/hw_5/__pycache__/
-/hw_5/.pytest_cache/

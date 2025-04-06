@@ -1,0 +1,4 @@
+hw_5/.idea/
+venv/
+test/.pytest_cache/
+test/__pycache__/
