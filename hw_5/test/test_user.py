@@ -1,111 +1,44 @@
-import pytest
-import requests
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 
-from pydantic import ValidationError
 
-from models import RegistrationForm
+def test_login(browser):
+    catalog_path = f"{browser.base_url}/index.php?route=account/register"
+    browser.get(catalog_path)
+    continue_button = browser.find_element(By.XPATH, "//button[@type='submit' and text()='Continue']")
+    assert continue_button.is_enabled()
 
 
 def test_without_a_name(browser):
     catalog_path = f"{browser.base_url}/index.php?route=account/register"
     browser.get(catalog_path)
-    response = requests.get(catalog_path, timeout=5)
-    assert response.status_code == 200
-    with pytest.raises(ValidationError) as exc_info:
-        RegistrationForm(
-            last_name="Шевченко",
-            email="shevchenko.asu@yandex.ru",
-            password="TestPass123",
-            agree=True
-        )
-    errors = exc_info.value.errors()
-    assert any(
-        error['loc'] == ('first_name',) and
-        error['type'] in ('missing', 'string_too_short')
-        for error in errors
+    checkbox = WebDriverWait(browser, 5).until(
+        EC.element_to_be_clickable((By.NAME, "agree"))
     )
+    checkbox.click()
+    assert checkbox.is_selected()
 
 
-def test_without_a_lastname(browser):
+def test_policy(browser):
     catalog_path = f"{browser.base_url}/index.php?route=account/register"
     browser.get(catalog_path)
-    response = requests.get(catalog_path, timeout=5)
-    assert response.status_code == 200
-    with pytest.raises(ValidationError) as exc_info:
-        RegistrationForm(
-            first_name="Юлия",
-            email="shevchenko.asu@yandex.ru",
-            password="TestPass123",
-            agree=True
-        )
-    errors = exc_info.value.errors()
-    assert any(
-        error['loc'] == ('last_name',) and
-        error['type'] in ('missing', 'string_too_short')
-        for error in errors
-    )
+    privacy_policy_link = browser.find_element(By.LINK_TEXT, "Privacy Policy")
+    assert privacy_policy_link.is_enabled()
 
 
-def test_without_email(browser):
+def test_login_page(browser):
     catalog_path = f"{browser.base_url}/index.php?route=account/register"
     browser.get(catalog_path)
-    response = requests.get(catalog_path, timeout=5)
-    assert response.status_code == 200
-    with pytest.raises(ValidationError) as exc_info:
-        RegistrationForm(
-            first_name="Юлия",
-            last_name="Шевченко",
-            password="TestPass123",
-            agree=True
-        )
-    errors = exc_info.value.errors()
-    assert any(
-        error['loc'] == ('email',) and
-        error['type'] in ('missing', 'string_too_short')
-        for error in errors
-    )
+    privacy_policy_link = browser.find_element(By.LINK_TEXT, "login page")
+    assert privacy_policy_link.is_enabled()
 
 
-def test_without_password(browser):
+def test_subscribe(browser):
     catalog_path = f"{browser.base_url}/index.php?route=account/register"
     browser.get(catalog_path)
-    response = requests.get(catalog_path, timeout=5)
-    assert response.status_code == 200
-    with pytest.raises(ValidationError) as exc_info:
-        RegistrationForm(
-            first_name="Юлия",
-            last_name="Шевченко",
-            email="shevchenko.asu@yandex.ru",
-            agree=True
-        )
-    errors = exc_info.value.errors()
-    assert any(
-        error['loc'] == ('password',) and
-        error['type'] in ('missing', 'string_too_short')
-        for error in errors
+    newsletter_toggle = WebDriverWait(browser, 10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input.form-check-input[name='newsletter']"))
     )
-
-
-def test_min_password_name(browser):
-    catalog_path = f"{browser.base_url}/index.php?route=account/register"
-    browser.get(catalog_path)
-    response = requests.get(catalog_path, timeout=5)
-    assert response.status_code == 200
-    with pytest.raises(ValidationError) as exc_info:
-        RegistrationForm(
-            last_name="Шевченко",
-            email="shevchenko.asu@yandex.ru",
-            password="111",
-            agree=True
-        )
-    errors = exc_info.value.errors()
-    assert any(
-        error['loc'] == ('password',) and
-        error['type'] == 'string_too_short'
-        for error in errors
-    )
-    assert any(
-        error['loc'] == ('first_name',) and
-        error['type'] == 'missing'
-        for error in errors
-    )
+    newsletter_toggle.click()
+    assert newsletter_toggle.is_selected()

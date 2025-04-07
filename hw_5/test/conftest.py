@@ -1,5 +1,4 @@
 import pytest
-import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromiumService
 from selenium.webdriver.firefox.service import Service as FFService
@@ -30,6 +29,15 @@ def browser(request):
     driver.quit()
 
 
+@pytest.fixture
+def desktop_catalog_url(browser):
+    return f"{browser.base_url}en-gb/catalog/desktops"
 
+
+@pytest.fixture
+def desktop_card_url(browser):
+    cart = 'ipod-classic'
+    catalog_path = f"{browser.base_url}/en-gb/product/mp3-players/{cart}"
+    return catalog_path
 
 
